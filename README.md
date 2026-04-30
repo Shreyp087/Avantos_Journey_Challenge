@@ -20,6 +20,8 @@ The app loads an action blueprint graph from the provided mock server, renders t
 
 ## Demo Screenshots
 
+These full-screen desktop captures show the implemented challenge flow using the live mock-server graph data.
+
 ### Dynamic Journey Graph
 
 The graph is rendered from the mock-server DAG data and highlights the selected form plus its upstream prefill sources.
