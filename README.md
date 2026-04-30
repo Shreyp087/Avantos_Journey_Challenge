@@ -18,6 +18,26 @@ The app loads an action blueprint graph from the provided mock server, renders t
 - Preserves in-session mappings while switching between form nodes.
 - Includes responsive layout, accessible control labels, modal autofocus, and Escape-to-close behavior.
 
+## Demo Screenshots
+
+### Dynamic Journey Graph
+
+The graph is rendered from the mock-server DAG data and highlights the selected form plus its upstream prefill sources.
+
+![Dynamic journey graph highlighting Form D](docs/screenshots/journey-graph-overview.png)
+
+### Prefill Editor
+
+The selected form panel shows form metadata, direct prerequisites, and configurable prefill fields.
+
+![Prefill editor for Form D](docs/screenshots/prefill-editor-form-d.png)
+
+### Mapping Modal
+
+The mapping modal uses the same provider system for global data and upstream form fields.
+
+![Mapping modal for Form D email field](docs/screenshots/mapping-modal-form-d-email.png)
+
 ## Challenge Links
 
 - Challenge API docs: https://admin-ui.dev-sandbox.workload.avantos-ai.net/docs#/operations/action-blueprint-graph-get
@@ -117,6 +137,7 @@ VITE_BLUEPRINT_ID=bp_01jk766tckfwx84xjcxazggzyc
 ## Documentation
 
 - `docs/ARCHITECTURE.md`: implementation architecture and module boundaries.
+- `docs/CODE_ORGANIZATION.md`: code organization notes for review and future extension.
 - `docs/DATA_SOURCE_PROVIDER_GUIDE.md`: how to add a new data source provider.
 - `docs/GRAPH_VIEW_NOTES.md`: dynamic visual DAG implementation notes.
 - `docs/JOURNEY_BUILDER_PRD.md`: detailed product requirements document.
@@ -143,6 +164,24 @@ The code is organized into focused layers:
 - `src/components`: React UI components for graph summary, form selection, prefill rows, and modal mapping.
 
 See `docs/ARCHITECTURE.md` for deeper notes.
+
+## Code Organization For Reviewers
+
+The project intentionally keeps business rules out of React components so the workflow can be reused or extended in a larger application.
+
+| Area | Main files | Purpose |
+|---|---|---|
+| API boundary | `src/api/blueprintClient.ts` | Builds the mock-server graph URL, fetches the graph, validates the response, and normalizes errors. |
+| API contracts | `src/types/blueprint.ts` | Defines graph, node, edge, reusable form, field schema, and mapping types. |
+| DAG traversal | `src/domain/graph.ts` | Builds graph indexes, resolves direct prerequisites, finds transitive ancestors, and guards against invalid cycles. |
+| Form normalization | `src/domain/forms.ts` | Extracts reusable form fields from JSON-schema-like form definitions. |
+| Mapping display | `src/domain/mappings.ts` | Converts existing API mappings and user-selected data elements into readable labels. |
+| Data sources | `src/domain/dataSources.ts`, `src/providers/*` | Keeps Action Properties, Client Organisation Properties, and upstream form fields behind one provider contract. |
+| Mapping state | `src/state/mappingReducer.ts` | Handles set, clear, and per-node mapping overrides without coupling to UI layout. |
+| UI composition | `src/components/*` | Renders the graph, form list, selected form summary, prefill panel, source tree, and modal. |
+| Tests | `src/**/*.test.ts`, `src/**/*.test.tsx` | Covers API behavior, graph traversal, providers, mapping state, and key user flows. |
+
+See `docs/CODE_ORGANIZATION.md` for a reviewer-focused breakdown of how the app can be extended.
 
 ## Add A Data Source Provider
 
